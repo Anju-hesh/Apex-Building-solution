@@ -2,6 +2,7 @@ package com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl;
 
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.CrudUtil;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.MachineProjectDAO;
+import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWantedDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.MachineProject;
 
@@ -77,5 +78,18 @@ public class MachineProjectDAOImpl implements MachineProjectDAO {
             machineProjectDtos.add(machineProject);
         }
         return machineProjectDtos;
+    }
+    public boolean saveProjectMachines(AddProjectWantedDto addProjectWantedDto) throws SQLException {
+        for (MachineProjectDto dto : addProjectWantedDto.getMachineProjectDtos()) {
+            boolean isSaved = CrudUtil.execute(
+                    "INSERT INTO projectmachinedetails VALUES (?,?,?)",
+                    addProjectWantedDto.getProjectId(),
+                    dto.getMachineId(),
+                    dto.getQty()
+            );
+
+            if (!isSaved) return false;
+        }
+        return true;
     }
 }

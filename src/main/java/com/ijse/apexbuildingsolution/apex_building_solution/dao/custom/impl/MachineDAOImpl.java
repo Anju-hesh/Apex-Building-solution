@@ -2,7 +2,9 @@ package com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl;
 
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.CrudUtil;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.MachineDAO;
+import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWantedDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineDto;
+import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Machine;
 
 import java.sql.ResultSet;
@@ -98,5 +100,37 @@ public class MachineDAOImpl implements MachineDAO {
             machineIds.add(rst.getString(1));
         }
         return machineIds;
+    }
+    public boolean updateMachineQuantities(AddProjectWantedDto addProjectWantedDto) throws SQLException {
+        for (MachineProjectDto dto : addProjectWantedDto.getMachineProjectDtos()) {
+            boolean isUpdated = CrudUtil.execute(
+                    "UPDATE machine SET QtyOnHand = QtyOnHand - ? WHERE MachineID = ?",
+                    dto.getQty(),
+                    dto.getMachineId()
+            );
+
+            if (!isUpdated) return false;
+
+            boolean availability = checkQtyZero(dto.getMachineId());
+            boolean isAvailabilityUpdated = CrudUtil.execute(
+                    "UPDATE machine SET Availability = ? WHERE MachineID = ?",
+                    availability,
+                    dto.getMachineId()
+            );
+
+            if (!isAvailabilityUpdated) return false;
+        }
+        return true;
+    }
+    private boolean checkQtyZero(String machineId) throws SQLException {
+        ResultSet rs = CrudUtil.execute(
+                "SELECT QtyOnHand FROM machine WHERE MachineID = ?",
+                machineId
+        );
+
+        if (rs.next()) {
+            return rs.getInt("QtyOnHand") > 0; // Availability should be true if QtyOnHand is above zero
+        }
+        return false;
     }
 }

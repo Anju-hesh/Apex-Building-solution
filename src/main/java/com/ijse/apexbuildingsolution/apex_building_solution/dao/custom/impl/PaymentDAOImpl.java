@@ -2,6 +2,7 @@ package com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl;
 
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.CrudUtil;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.PaymentDAO;
+import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWantedDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.PaymentDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Payment;
 
@@ -77,5 +78,21 @@ public class PaymentDAOImpl implements PaymentDAO {
             );
         }
         return null;
+    }
+    public boolean savePayments(AddProjectWantedDto addProjectWantedDto) throws SQLException {
+        for (PaymentDto dto : addProjectWantedDto.getPaymentDtos()) {
+            boolean isSaved = CrudUtil.execute(
+                    "INSERT INTO payment VALUES (?,?,?,?,?,?)",
+                    dto.getPaymentId(),
+                    dto.getPaymentMethod(),
+                    dto.getFullBalance(),
+                    dto.getPayedBalance(),
+                    dto.getProjectId(),
+                    dto.getStatus()
+            );
+
+            if (!isSaved) return false;
+        }
+        return true;
     }
 }
