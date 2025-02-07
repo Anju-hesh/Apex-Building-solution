@@ -1,10 +1,12 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.ProjectFormBO;
+import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.CustomerDAO;
+import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.CustomerDAOImpl;
 import com.ijse.apexbuildingsolution.apex_building_solution.db.DBConnection;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.ProjectDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.ProjectTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.CustomerFormModel;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.ProjectFormModel;
 import com.ijse.apexbuildingsolution.apex_building_solution.service.DataSaveSingalton;
 import com.ijse.apexbuildingsolution.apex_building_solution.service.EnteredUserId;
 import com.jfoenix.controls.JFXButton;
@@ -155,7 +157,7 @@ public class ProjectFormController implements Initializable {
     @FXML
 //    private JFXTextField txtUserId;
 
-    private final ProjectFormModel PROJECTFORMMODEL = new ProjectFormModel();
+    private final ProjectFormBO PROJECTFORMBO = (ProjectFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.PROJECT);
     DataSaveSingalton datas = DataSaveSingalton.getInstance();
 
     public void initialize (URL url , ResourceBundle resourceBundle) {
@@ -169,7 +171,7 @@ public class ProjectFormController implements Initializable {
             btnGenarat.setDisable(true);
 //            loadCustId();
 
-            String nextProjectID = PROJECTFORMMODEL.getNextProjectId();
+            String nextProjectID = PROJECTFORMBO.getNextProjectId();
             lblProjectIdShow.setStyle("-fx-text-fill:#2980b9;");
             lblProjectIdShow.setText(nextProjectID);
 
@@ -190,8 +192,8 @@ public class ProjectFormController implements Initializable {
             new Alert(Alert.AlertType.ERROR,"Fail to load Page!" + e.getMessage()).show();
         }
     }
-    public void loadTableData() throws SQLException {
-        ArrayList<ProjectDto> projectDtos = PROJECTFORMMODEL.getAllProject();
+    public void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<ProjectDto> projectDtos = PROJECTFORMBO.getAllProject();
         ObservableList<ProjectTM> projectTMS = FXCollections.observableArrayList();
 
         for (ProjectDto projectDto : projectDtos) {
@@ -219,10 +221,10 @@ public class ProjectFormController implements Initializable {
         clmUserId.setCellValueFactory(new PropertyValueFactory<>("userId"));
     }
 
-    public void refreshPage() throws SQLException {
+    public void refreshPage() throws SQLException, ClassNotFoundException {
         String LogedUserId = EnteredUserId.getLoggedInUserId();
 
-        lblProjectIdShow.setText(PROJECTFORMMODEL.getNextProjectId());
+        lblProjectIdShow.setText(PROJECTFORMBO.getNextProjectId());
         txtProjectId.setText("");
         txtProjectName.setText("");
         txtDescription.setText("");
@@ -240,7 +242,7 @@ public class ProjectFormController implements Initializable {
 
         if (selectedProject != null) {
             try {
-                boolean isDeleted = PROJECTFORMMODEL.deleteProject(selectedProject.getProjectId());
+                boolean isDeleted = PROJECTFORMBO.deleteProject(selectedProject.getProjectId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Project Deleted Successfully!").show();
                     loadTableData();
@@ -248,7 +250,7 @@ public class ProjectFormController implements Initializable {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -302,7 +304,7 @@ public class ProjectFormController implements Initializable {
 
                     String LogedUserId = EnteredUserId.getLoggedInUserId();
 
-                    boolean isProjectIdUsed = PROJECTFORMMODEL.isProjectIdUsed(projectId);
+                    boolean isProjectIdUsed = PROJECTFORMBO.isProjectIdUsed(projectId);
                     if (isProjectIdUsed) {
                         new Alert(Alert.AlertType.ERROR, "This Project ID is already used. Please choose a different ID.").show();
                         return;
@@ -322,7 +324,7 @@ public class ProjectFormController implements Initializable {
                 }
         }catch(DateTimeParseException e){
             new Alert(Alert.AlertType.ERROR, "Invalid date format. Please use yyyy-MM-dd").show();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
         }
     }
@@ -358,7 +360,7 @@ public class ProjectFormController implements Initializable {
             lblProjectIdShow.setText(projectId);
             brnReFill.setDisable(false);
             try {
-                ProjectDto projectDto = PROJECTFORMMODEL.searchProject(projectId);
+                ProjectDto projectDto = PROJECTFORMBO.searchProject(projectId);
                 if (projectDto != null) {
                     txtProjectName.setText(projectDto.getProjectName());
                     txtDescription.setText(projectDto.getProjectDescription());
@@ -390,7 +392,7 @@ public class ProjectFormController implements Initializable {
         if (isValid()) {
             try {
                 ProjectDto projectDto = new ProjectDto(projectId, projectName, description, customerId, startDate, endDate, userId);
-                boolean isUpdated = PROJECTFORMMODEL.updateProject(projectDto);
+                boolean isUpdated = PROJECTFORMBO.updateProject(projectDto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.INFORMATION, "Project Upadated Successfully!").show();
                     loadTableData();
@@ -398,7 +400,7 @@ public class ProjectFormController implements Initializable {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Upadated Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -424,9 +426,9 @@ public class ProjectFormController implements Initializable {
     }
 
     void loadCustId() throws SQLException {
-        CustomerFormModel CUSTOMERFORMMODEL = new CustomerFormModel();
+        CustomerDAO CUSTOMERFORDAO = new CustomerDAOImpl();
 
-        ArrayList<String> customerIds = CUSTOMERFORMMODEL.getCustomerIds();
+        ArrayList<String> customerIds = CUSTOMERFORDAO.getCustomerIds();
         ObservableList<String> observableList = FXCollections.observableArrayList();
         observableList.addAll(customerIds);
         cmbCustId.setItems(observableList);
@@ -533,9 +535,9 @@ public class ProjectFormController implements Initializable {
     }
 
     @FXML
-    void reFillOnAction(ActionEvent event) throws SQLException {
+    void reFillOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         refreshPage();
-        lblProjectIdShow.setText(PROJECTFORMMODEL.getNextProjectId());
+        lblProjectIdShow.setText(PROJECTFORMBO.getNextProjectId());
         lblStartDateNow.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         String LogedUserId = EnteredUserId.getLoggedInUserId();
         lblUserIdShow.setText(LogedUserId);

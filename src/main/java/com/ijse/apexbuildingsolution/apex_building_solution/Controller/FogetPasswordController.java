@@ -1,6 +1,8 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
-import com.ijse.apexbuildingsolution.apex_building_solution.model.UserAccountModel;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.UseraccountFormBO;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl.UseraccountFormBOImpl;
 import com.ijse.apexbuildingsolution.apex_building_solution.service.DataSaveSingalton;
 import com.ijse.apexbuildingsolution.apex_building_solution.service.SendEmail;
 import com.jfoenix.controls.JFXButton;
@@ -72,7 +74,7 @@ public class FogetPasswordController {
     Random rand = new Random();
 
     private final SendEmail sendEmail = new SendEmail();
-    private final UserAccountModel userAccountModel = new UserAccountModel();
+    private final UseraccountFormBO USERACCOUNTFORMBO = (UseraccountFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.USERACCOUNT);
     private DataSaveSingalton dataSaveSingalton = DataSaveSingalton.getInstance();
     private int code = rand.nextInt(1000,9999);
 
@@ -97,11 +99,11 @@ public class FogetPasswordController {
     @FXML
     void sendCodeOnAction(ActionEvent event) throws SQLException {
 
-        String[] userNameAndEmail = userAccountModel.getDetails(txtEmail.getText());
+        String[] userNameAndEmail = USERACCOUNTFORMBO.getDetails(txtEmail.getText());
         System.out.println(userNameAndEmail[0] + " , " + userNameAndEmail[1]);
 
         if (userNameAndEmail[0].equals( txtUserName.getText() )&& userNameAndEmail[1].equals(txtEmail.getText())) {
-            String userId = userAccountModel.getId(txtEmail.getText());
+            String userId = USERACCOUNTFORMBO.getId(txtEmail.getText());
             dataSaveSingalton.setUserId(userId);
             String from = "anjanaheshan676@gmail.com";
             String to = txtEmail.getText();

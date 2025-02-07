@@ -1,10 +1,9 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.CustomerDto;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.MachineFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.CustomerTM;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MachineTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.MachineFormModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -112,7 +111,7 @@ public class MachineFormController {
     @FXML
     private JFXTextField txtQtyOnHand;
 
-    private final MachineFormModel MACHINEFORMMODEL = new MachineFormModel();
+    private final MachineFormBO MACHINEFORMBO = (MachineFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.MACHINE);
 
     public void initialize() {
         try {
@@ -126,13 +125,13 @@ public class MachineFormController {
         }
     }
 
-    private void loadTableData() throws SQLException {
+    private void loadTableData() throws SQLException, ClassNotFoundException {
 
-        String nextMachineID = MACHINEFORMMODEL.getNextMachineId(); // Nawatha table eka load wna wita id ekada eth samagama fill weemata
+        String nextMachineID = MACHINEFORMBO.getNextMachineId(); // Nawatha table eka load wna wita id ekada eth samagama fill weemata
         lblMachineIdShow.setStyle("-fx-text-fill:#2980b9;");
         lblMachineIdShow.setText(nextMachineID);
 
-        ArrayList<MachineDto> machineDtos = MACHINEFORMMODEL.getAllMachinne();
+        ArrayList<MachineDto> machineDtos = MACHINEFORMBO.getAllMachinne();
         ObservableList<MachineTM> machineTMS = FXCollections.observableArrayList();
 
         for (MachineDto machineDto : machineDtos) {
@@ -155,9 +154,9 @@ public class MachineFormController {
         clmQtyOnHand.setCellValueFactory(new PropertyValueFactory<>("QtyOnHand"));
     }
 
-    public void refreshPage() throws SQLException {
+    public void refreshPage() throws SQLException, ClassNotFoundException {
 
-        lblMachineIdShow.setText(MACHINEFORMMODEL.getNextMachineId());
+        lblMachineIdShow.setText(MACHINEFORMBO.getNextMachineId());
         txtMachineId.setText("");
         txtMachineName.setText("");
         txtMachineAvailability.setText("");
@@ -171,7 +170,7 @@ public class MachineFormController {
 
         if (selectedMachine != null) {
             try {
-                boolean isDeleted = MACHINEFORMMODEL.deleteMachine(selectedMachine.getMachineId());
+                boolean isDeleted = MACHINEFORMBO.deleteMachine(selectedMachine.getMachineId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Machine Deleted Successfully!").show();
                     refreshPage();
@@ -179,7 +178,7 @@ public class MachineFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Machine!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -193,7 +192,7 @@ public class MachineFormController {
 
         if (!machineId.isEmpty()) {
             try {
-                MachineDto machineDto = MACHINEFORMMODEL.searchMachine(machineId);
+                MachineDto machineDto = MACHINEFORMBO.searchMachine(machineId);
                 if (machineDto != null) {
                     lblMachineIdShow.setText(machineId);
                     txtMachineName.setText(machineDto.getMachineName());
@@ -226,10 +225,10 @@ public class MachineFormController {
     }
 
     @FXML
-    void reloadOnActon(ActionEvent event) throws SQLException {
+    void reloadOnActon(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
-        lblMachineIdShow.setText(MACHINEFORMMODEL.getNextMachineId());
+        lblMachineIdShow.setText(MACHINEFORMBO.getNextMachineId());
     }
 
     @FXML
@@ -249,7 +248,7 @@ public class MachineFormController {
         if (!machineId.isEmpty() && !machineName.isEmpty() && !status.isEmpty()) {
             try {
                 MachineDto machineDto = new MachineDto(machineId, machineName, availability, status,qtyOnHand);
-                boolean isSaved = MACHINEFORMMODEL.saveMachine(machineDto);
+                boolean isSaved = MACHINEFORMBO.saveMachine(machineDto);
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Machine Saved Successfully!").show();
                     loadTableData();
@@ -257,7 +256,7 @@ public class MachineFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Machine!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -282,7 +281,7 @@ public class MachineFormController {
         if (!machineId.isEmpty() && !machineName.isEmpty() && !status.isEmpty()) {
             try {
                 MachineDto machineDto = new MachineDto(machineId, machineName, availability, status,qtyOnHand);
-                boolean isUpdated = MACHINEFORMMODEL.updateMachine(machineDto);
+                boolean isUpdated = MACHINEFORMBO.updateMachine(machineDto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.INFORMATION, "Machine Updated Successfully!").show();
                     loadTableData();
@@ -290,7 +289,7 @@ public class MachineFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Updated Machine!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {

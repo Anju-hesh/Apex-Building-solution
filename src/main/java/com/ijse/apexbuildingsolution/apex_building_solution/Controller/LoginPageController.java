@@ -1,8 +1,8 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
-import com.ijse.apexbuildingsolution.apex_building_solution.model.LoginPageModel;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.UseraccountFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.service.EnteredUserId;
-import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -75,7 +75,7 @@ public class LoginPageController {
     @FXML
     private TextField txtPasswordShow;
 
-    private final LoginPageModel LOGINPAGEMODEL = new LoginPageModel();
+    private final UseraccountFormBO USERACCOUNTFORMBO = (UseraccountFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.USERACCOUNT);
 
     public void initialize() {
         changeFocus();
@@ -171,11 +171,11 @@ public class LoginPageController {
         String password = txtPassword.getText();
 
         try {
-            String valid = LOGINPAGEMODEL.validateLogin(username, password);
+            String valid = USERACCOUNTFORMBO.validateLogin(username, password);
 
             if (valid.equals("Congrats...!")) {
 
-                String userId = LOGINPAGEMODEL.getUserId(username,password);
+                String userId = USERACCOUNTFORMBO.getUserId(username,password);
                 EnteredUserId.setLoggedInUserId(userId);
                 System.out.println("Logged in User ID: " + EnteredUserId.getLoggedInUserId());
 

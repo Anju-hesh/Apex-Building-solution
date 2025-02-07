@@ -18,7 +18,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="addprojectMainAnchorPane" opacity="0.93" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-color: White;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ijse.apexbuildingsolution.apex_building_solution.Controller.addprojectWanted">
+<AnchorPane fx:id="addprojectMainAnchorPane" opacity="0.93" prefHeight="650.0" prefWidth="1000.0" style="-fx-background-color: White;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ijse.apexbuildingsolution.apex_building_solution.Controller.addprojectWantedController">
    <children>
       <ImageView fx:id="imgAddProject" fitHeight="650.0" fitWidth="1000.0" opacity="0.52" pickOnBounds="true">
          <image>

@@ -1,15 +1,16 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.CustomerFormBO;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl.CustomerFormBOImpl;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.CustomerDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.CustomerTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.CustomerFormModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -20,7 +21,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class CustomerFormController {
     @FXML
     private JFXTextField txtCustomerName;
 
-    private final CustomerFormModel CUSTOMERFORMMODEL = new CustomerFormModel();
+    private final CustomerFormBO CUSTOMERFORMBO = (CustomerFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.CUSTOMER);
 
     public void initialize() {
 
@@ -116,7 +116,7 @@ public class CustomerFormController {
 //            btnUpdateCustomer.setDisable(true);
 
 
-            String nextCustomerID = CUSTOMERFORMMODEL.getNextCusomerId();
+            String nextCustomerID = CUSTOMERFORMBO.getNextCusomerId();
             lblCustomerIdShow.setStyle("-fx-text-fill: #2980b9;");
             lblCustomerIdShow.setText(nextCustomerID);
 
@@ -124,8 +124,8 @@ public class CustomerFormController {
             new Alert(Alert.AlertType.ERROR, "Fail to load Page: " + e.getMessage()).show();
         }
     }
-    private void loadTableData() throws SQLException {
-        ArrayList<CustomerDto> customerDtos = CUSTOMERFORMMODEL.getAllCustomer();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<CustomerDto> customerDtos = CUSTOMERFORMBO.getAllCustomer();
         ObservableList<CustomerTM> customerTMS = FXCollections.observableArrayList();
 
         for (CustomerDto customerDto : customerDtos) {
@@ -146,8 +146,8 @@ public class CustomerFormController {
         clmContactNumber.setCellValueFactory(new PropertyValueFactory<>("customerPhone"));
     }
 
-    public void refreshPage() throws SQLException {
-        lblCustomerIdShow.setText(CUSTOMERFORMMODEL.getNextCusomerId());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        lblCustomerIdShow.setText(CUSTOMERFORMBO.getNextCusomerId());
         txtCustomerName.setText("");
         txtCustomerAddress.setText("");
         txtContactNumber.setText("");
@@ -160,7 +160,7 @@ public class CustomerFormController {
 
         if (selectedCustomer != null) {
             try {
-                boolean isDeleted = CUSTOMERFORMMODEL.deleteCustomer(selectedCustomer.getCustomerId());
+                boolean isDeleted = CUSTOMERFORMBO.deleteCustomer(selectedCustomer.getCustomerId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Customer Deleted Successfully!").show();
                     loadTableData(); // Refresh table
@@ -170,7 +170,7 @@ public class CustomerFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Customer!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -192,7 +192,7 @@ public class CustomerFormController {
          //   if (isContactNumberAlreadyExist) {
                 try {
                     CustomerDto customerDto = new CustomerDto(customerId, customerName, customerAddress, contactNumber);
-                    boolean isSaved = CUSTOMERFORMMODEL.saveCustomer(customerDto);
+                    boolean isSaved = CUSTOMERFORMBO.saveCustomer(customerDto);
                     if (isSaved) {
                         new Alert(Alert.AlertType.INFORMATION, "Customer Saved Successfully!").show();
                         loadTableData(); // Refresh table
@@ -206,7 +206,7 @@ public class CustomerFormController {
                     } else {
                         new Alert(Alert.AlertType.ERROR, "Failed to Save Customer!").show();
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | ClassNotFoundException e) {
                     new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
                 }
 //            }else {
@@ -223,7 +223,7 @@ public class CustomerFormController {
 
         if (!customerId.isEmpty()) {
             try {
-                CustomerDto customerDto = CUSTOMERFORMMODEL.searchCustomer(customerId);
+                CustomerDto customerDto = CUSTOMERFORMBO.searchCustomer(customerId);
                 if (customerDto != null) {
                     txtCustomerName.setText(customerDto.getCustomerName());
                     txtCustomerAddress.setText(customerDto.getCustomerAddress());
@@ -255,10 +255,10 @@ public class CustomerFormController {
     }
 
     @FXML
-    void reloadOnAction(ActionEvent event) throws SQLException {
+    void reloadOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
-        lblCustomerIdShow.setText(CUSTOMERFORMMODEL.getNextCusomerId());
+        lblCustomerIdShow.setText(CUSTOMERFORMBO.getNextCusomerId());
     }
 
     @FXML
@@ -273,7 +273,7 @@ public class CustomerFormController {
 
                 try {
                     CustomerDto customerDto = new CustomerDto(customerId, customerName, customerAddress, contactNumber);
-                    boolean isUpdated = CUSTOMERFORMMODEL.updateCustomer(customerDto);
+                    boolean isUpdated = CUSTOMERFORMBO.updateCustomer(customerDto);
                     if (isUpdated) {
                         new Alert(Alert.AlertType.INFORMATION, "Customer Updated Successfully!").show();
                         loadTableData(); // Refresh table
@@ -283,7 +283,7 @@ public class CustomerFormController {
                     } else {
                         new Alert(Alert.AlertType.ERROR, "Failed to Update Customer!").show();
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | ClassNotFoundException e) {
                     new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
                 }
             }else{

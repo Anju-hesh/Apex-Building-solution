@@ -1,8 +1,9 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.PaymentBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.PaymentDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.PaymentTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.PaymentModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -112,7 +113,7 @@ public class PaymentFormController {
     @FXML
     private JFXTextField txtStatus;
 
-    private final PaymentModel PAYMENTMODEL = new PaymentModel();
+    private final PaymentBO PAYMENTBO = (PaymentBO) BOFactory.getInstance().getBO(BOFactory.BOType.PAYMENT);
 
     public void initialize() {
         try {
@@ -123,7 +124,7 @@ public class PaymentFormController {
 
             btnReload.setDisable(true);
 
-            String nextPaymentId = PAYMENTMODEL.getNextPaymentId();
+            String nextPaymentId = PAYMENTBO.getNextPaymentId();
             lblPaymentIdShow.setStyle("-fx-text-fill:#2980b9;");
             lblPaymentIdShow.setText(nextPaymentId);
 
@@ -131,8 +132,8 @@ public class PaymentFormController {
             new Alert(Alert.AlertType.ERROR,"Fail to load Page!").show();
         }
     }
-    private void loadTableData() throws SQLException {
-        ArrayList<PaymentDto> paymentDtos = PAYMENTMODEL.getAllPayments();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<PaymentDto> paymentDtos = PAYMENTBO.getAllPayments();
         ObservableList<PaymentTM> paymentTMS = FXCollections.observableArrayList();
 
         for (PaymentDto paymentDto : paymentDtos) {
@@ -157,8 +158,8 @@ public class PaymentFormController {
         clmStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
     }
 
-    public void refreshPage() throws SQLException {
-        lblPaymentIdShow.setText(PAYMENTMODEL.getNextPaymentId());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        lblPaymentIdShow.setText(PAYMENTBO.getNextPaymentId());
         txtPaymentMethod.setText("");
         txtFullBalance.setText("");
         txtPayedBalance.setText("");
@@ -172,7 +173,7 @@ public class PaymentFormController {
 
         if (selectedPayment != null) {
             try {
-                boolean isDeleted = PAYMENTMODEL.deletePayment(selectedPayment.getPaymentId());
+                boolean isDeleted = PAYMENTBO.deletePayment(selectedPayment.getPaymentId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Payment Deleted Successfully!").show();
                     loadTableData();
@@ -180,7 +181,7 @@ public class PaymentFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Payment!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -195,7 +196,7 @@ public class PaymentFormController {
         if (!projectId.isEmpty()) {
             btnReload.setDisable(false);
             try {
-                PaymentDto paymentDto = PAYMENTMODEL.searchPayment(projectId);
+                PaymentDto paymentDto = PAYMENTBO.searchPayment(projectId);
                 if (paymentDto != null) {
                     lblPaymentIdShow.setText(paymentDto.getPaymentId());
                     txtPaymentMethod.setText(paymentDto.getPaymentMethod());
@@ -229,7 +230,7 @@ public class PaymentFormController {
     }
 
     @FXML
-    void reloadOnAction(ActionEvent event) throws SQLException {
+    void reloadOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
         btnReload.setDisable(true);
@@ -254,7 +255,7 @@ public class PaymentFormController {
         if (!paymentId.isEmpty() && !paymentMethod.isEmpty() && !status.isEmpty()&& !projectId.isEmpty() && fullBalance >0 && payedBalance >0) {
             try {
                 PaymentDto paymentDto = new PaymentDto(paymentId,paymentMethod,fullBalance,payedBalance,projectId,status);
-                boolean isUpdated = PAYMENTMODEL.updatePayment(paymentDto);
+                boolean isUpdated = PAYMENTBO.updatePayment(paymentDto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.INFORMATION, "Payment Updated Successfully!").show();
                     loadTableData();
@@ -262,7 +263,7 @@ public class PaymentFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Updated Payment!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {

@@ -1,9 +1,11 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.EmployeeFormBO;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl.EmployeeFormBOImpl;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.EmployeeDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.EmployeeTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MachineTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.EmployeeFormModel;
+//import com.ijse.apexbuildingsolution.apex_building_solution.model.EmployeeFormModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -131,7 +133,7 @@ public class EmployeeFormController implements Initializable {
     @FXML
     private JFXTextField txtSalary;
 
-    private final EmployeeFormModel EMPLOYEEFORMMODEL = new EmployeeFormModel();
+    private final EmployeeFormBO EMPLOYEEFORMBO = (EmployeeFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.EMPLOYEE);
 
     public void initialize(URL url , ResourceBundle resourceBundle) {
         try {
@@ -141,7 +143,7 @@ public class EmployeeFormController implements Initializable {
             visibleData();
             btnReFill.setDisable(true);
 
-            String nextEmployeeID = EMPLOYEEFORMMODEL.getNextEmployeeId();
+            String nextEmployeeID = EMPLOYEEFORMBO.getNextEmployeeId();
             lblEmplooyeeIdShow.setStyle("-fx-text-fill:#2980b9;");
             lblEmplooyeeIdShow.setText(nextEmployeeID);
 
@@ -149,8 +151,8 @@ public class EmployeeFormController implements Initializable {
             new Alert(Alert.AlertType.ERROR, "Fail to load Page!").show();
         }
     }
-    private void loadTableData() throws SQLException {
-        ArrayList<EmployeeDto> employeeDtos = EMPLOYEEFORMMODEL.getAllEmployees();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<EmployeeDto> employeeDtos = EMPLOYEEFORMBO.getAllEmployees();
         ObservableList<EmployeeTM> employeeTMS = FXCollections.observableArrayList();
 
         for (EmployeeDto employeeDto : employeeDtos) {
@@ -177,8 +179,8 @@ public class EmployeeFormController implements Initializable {
         clmAttendence.setCellValueFactory(new PropertyValueFactory<>("attendents"));
     }
 
-    public void refreshPage() throws SQLException {
-        lblEmplooyeeIdShow.setText(EMPLOYEEFORMMODEL.getNextEmployeeId());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        lblEmplooyeeIdShow.setText(EMPLOYEEFORMBO.getNextEmployeeId());
         txtEmployeeName.setText("");
         txtRole.setText("");
         txtEmployeeAddress.setText("");
@@ -193,7 +195,7 @@ public class EmployeeFormController implements Initializable {
 
         if (selectedEmployee != null) {
             try {
-                boolean isDeleted = EMPLOYEEFORMMODEL.deleteEmployee(selectedEmployee.getEmployeeId());
+                boolean isDeleted = EMPLOYEEFORMBO.deleteEmployee(selectedEmployee.getEmployeeId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Employee Deleted Successfully!").show();
                     loadTableData();
@@ -201,7 +203,7 @@ public class EmployeeFormController implements Initializable {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Employee!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -229,7 +231,7 @@ public class EmployeeFormController implements Initializable {
             if (!employeeId.isEmpty() && !employeeName.isEmpty() && !role.isEmpty() && !address.isEmpty() && !phone.isEmpty() && !attendents.isEmpty()) {
                 try {
                     EmployeeDto employeeDto = new EmployeeDto(employeeId, employeeName, role, address, salary, phone, attendents);
-                    boolean isSaved = EMPLOYEEFORMMODEL.saveEmployee(employeeDto);
+                    boolean isSaved = EMPLOYEEFORMBO.saveEmployee(employeeDto);
                     if (isSaved) {
                         new Alert(Alert.AlertType.INFORMATION, "Employee Saved Successfully!").show();
                         loadTableData();
@@ -237,7 +239,7 @@ public class EmployeeFormController implements Initializable {
                     } else {
                         new Alert(Alert.AlertType.ERROR, "Failed to Save Employee!").show();
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | ClassNotFoundException e) {
                     new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
                 }
             } else {
@@ -255,7 +257,7 @@ public class EmployeeFormController implements Initializable {
         if (!employeeId.isEmpty()) {
             btnReFill.setDisable(false);
             try {
-                EmployeeDto employeeDto = EMPLOYEEFORMMODEL.searchEmployee(employeeId);
+                EmployeeDto employeeDto = EMPLOYEEFORMBO.searchEmployee(employeeId);
                 if (employeeDto != null) {
                     lblEmplooyeeIdShow.setText(employeeDto.getEmployeeId());
                     txtEmployeeName.setText(employeeDto.getEmployeeName());
@@ -311,7 +313,7 @@ public class EmployeeFormController implements Initializable {
             if (!employeeId.isEmpty() && !employeeName.isEmpty() && !role.isEmpty() && !address.isEmpty() && !phone.isEmpty() && !attendents.isEmpty()) {
                 try {
                     EmployeeDto employeeDto = new EmployeeDto(employeeId, employeeName, role, address, salary, phone, attendents);
-                    boolean isUpdated = EMPLOYEEFORMMODEL.updateEmployee(employeeDto);
+                    boolean isUpdated = EMPLOYEEFORMBO.updateEmployee(employeeDto);
                     if (isUpdated) {
                         new Alert(Alert.AlertType.INFORMATION, "Employee Updated Successfully!").show();
                         loadTableData();
@@ -319,7 +321,7 @@ public class EmployeeFormController implements Initializable {
                     } else {
                         new Alert(Alert.AlertType.ERROR, "Failed to Update Employee!").show();
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | ClassNotFoundException e) {
                     new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
                 }
             } else {
@@ -370,10 +372,10 @@ public class EmployeeFormController implements Initializable {
         txtAttendence.setStyle(txtAttendence.getStyle() + "-fx-border-color: #34495e;"+ "-fx-border-width: 0px 0px 1.5px 0px;");
         txtSalary.setStyle(txtSalary.getStyle() + "-fx-border-color: #34495e;"+ "-fx-border-width: 0px 0px 1.5px 0px;");
 
-        if (!employeeName.matches(namePattern)) {
-            txtEmployeeName.setStyle(txtEmployeeName.getStyle() + "-fx-border-color: red;");
-            valid = false;
-        }
+//        if (!employeeName.matches(namePattern)) {
+//            txtEmployeeName.setStyle(txtEmployeeName.getStyle() + "-fx-border-color: red;");
+//            valid = false;
+//        }
 
         if (!role.matches(rolePattern)) {
             txtRole.setStyle(txtRole.getStyle() + "-fx-border-color: red;");
@@ -404,7 +406,7 @@ public class EmployeeFormController implements Initializable {
     }
 
     @FXML
-    void reFillOnAction(ActionEvent event) throws SQLException {
+    void reFillOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
      //   lblEmplooyeeIdShow.setText(EMPLOYEEFORMMODEL.getNextEmployeeId());

@@ -1,6 +1,7 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
-import com.ijse.apexbuildingsolution.apex_building_solution.model.UserAccountModel;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.UseraccountFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.service.DataSaveSingalton;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
@@ -68,7 +69,7 @@ public class ResetPasswordController {
     @FXML
     private JFXTextField txtReEnterPassword;
 
-    private final UserAccountModel userAccountModel = new UserAccountModel();
+    private final UseraccountFormBO USERACCOUNTFORMBO = (UseraccountFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.USERACCOUNT);
     private DataSaveSingalton dataSaveSingalton = DataSaveSingalton.getInstance();
 
     public void initialize() {
@@ -92,7 +93,7 @@ public class ResetPasswordController {
         String password = txtPasswordFieldReEnter.getText();
         if (newPassword.equals(password)) {
             String id = dataSaveSingalton.getUserId();
-            boolean isUpdate = userAccountModel.updateDetails(newPassword,id);
+            boolean isUpdate = USERACCOUNTFORMBO.updateDetails(newPassword,id);
             if (isUpdate) {
                 try {
                     resetPasswordAnchorPane.getChildren().clear();

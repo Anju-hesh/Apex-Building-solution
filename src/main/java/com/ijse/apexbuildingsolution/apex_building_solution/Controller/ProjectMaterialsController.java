@@ -1,13 +1,13 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.ProjectMaterialFormBO;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl.ProjectMaterialFormBOImpl;
 import com.ijse.apexbuildingsolution.apex_building_solution.db.DBConnection;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.ProjectMaterialsDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MachineProjectTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MachineTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MaterialsTM;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.ProjectMaterialTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.ProjectMaterialsFormModel;
+//import com.ijse.apexbuildingsolution.apex_building_solution.model.ProjectMaterialsFormModel;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -102,7 +102,7 @@ public class ProjectMaterialsController {
     @FXML
     private JFXTextField txtQty;
 
-    private final ProjectMaterialsFormModel PROJECTMATERIALSFORMMODEL = new ProjectMaterialsFormModel();
+    private final ProjectMaterialFormBO PROJECTMATERIALFORMBO = (ProjectMaterialFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.PROJECTMATERIAL);
 
     public void initialize() {
         try {
@@ -114,7 +114,7 @@ public class ProjectMaterialsController {
 
             btnReload.setDisable(true);
 
-            String nextProjectID = PROJECTMATERIALSFORMMODEL.getNextProjectID();
+            String nextProjectID = PROJECTMATERIALFORMBO.getNextProjectID();
             lblProjectIdMaterialShow.setStyle("-fx-text-fill:#2980b9;");
             lblProjectIdMaterialShow.setText(nextProjectID);
 
@@ -129,8 +129,8 @@ public class ProjectMaterialsController {
         clmQty.setCellValueFactory(new PropertyValueFactory<>("qty"));
     }
 
-    private void loadTableData() throws SQLException {
-        ArrayList<ProjectMaterialsDto> projectMaterialsDtos = PROJECTMATERIALSFORMMODEL.getAllProjectMaterialDetails();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<ProjectMaterialsDto> projectMaterialsDtos = PROJECTMATERIALFORMBO.getAllProjectMaterialDetails();
         ObservableList<ProjectMaterialTM> projectMaterialTMS = FXCollections.observableArrayList();
 
         for (ProjectMaterialsDto projectMaterialsDto : projectMaterialsDtos) {
@@ -146,18 +146,19 @@ public class ProjectMaterialsController {
 
     @FXML
     void deleteDetailsOnAction(ActionEvent event) {
-    //    ProjectMaterialTM selectedProject = tblProjectMaterialsDetailsForm.getSelectionModel().getSelectedItem();
+        ProjectMaterialTM selectedProject = tblProjectMaterialsDetailsForm.getSelectionModel().getSelectedItem();
         String id = lblProjectIdMaterialShow.getText();
-        if ((id != null)) {
+        if (selectedProject!=null || (id != null)) {
             try {
-                boolean isDeleted = PROJECTMATERIALSFORMMODEL.deleteMaterialProject(id);
+                boolean isDeleted = PROJECTMATERIALFORMBO.deleteMaterialProject(id);
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Material Deleted Successfully From The Project!").show();
                     refreshPage(); // Clear form fields
+                    loadTableData();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Material From This Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -174,14 +175,15 @@ public class ProjectMaterialsController {
         if (!projectId.isEmpty() && !matId.isEmpty() && qty > -1) {
             try {
                 ProjectMaterialsDto materialsDto = new ProjectMaterialsDto(projectId, matId, qty);
-                boolean isSaved = PROJECTMATERIALSFORMMODEL.saveMaterialProject(materialsDto);
+                boolean isSaved = PROJECTMATERIALFORMBO.saveMaterialProject(materialsDto);
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Material Saved Successfully for that Project!").show();
                     refreshPage(); // Clear form fields
+                    loadTableData();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Material For this Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -196,7 +198,7 @@ public class ProjectMaterialsController {
         if (!projectId.isEmpty()) {
             btnReload.setDisable(false);
             try {
-                ArrayList<ProjectMaterialsDto> materialsDto = PROJECTMATERIALSFORMMODEL.searchMaterialProject(projectId);
+                ArrayList<ProjectMaterialsDto> materialsDto = PROJECTMATERIALFORMBO.searchMaterialProject(projectId);
                 ObservableList<ProjectMaterialTM> projectMaterialTMS = FXCollections.observableArrayList();
 
                 if (materialsDto != null) {
@@ -226,10 +228,10 @@ public class ProjectMaterialsController {
     }
 
     @FXML
-    void reloadOnAction(ActionEvent event) throws SQLException {
+    void reloadOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
-        lblProjectIdMaterialShow.setText(PROJECTMATERIALSFORMMODEL.getNextProjectID());
+        lblProjectIdMaterialShow.setText(PROJECTMATERIALFORMBO.getNextProjectID());
         btnReload.setDisable(true);
     }
 
@@ -254,22 +256,23 @@ public class ProjectMaterialsController {
         if (!projectId.isEmpty() && !matId.isEmpty() && qty > -1) {
             try {
                 ProjectMaterialsDto materialsDto = new ProjectMaterialsDto(projectId, matId, qty);
-                boolean isUpdated = PROJECTMATERIALSFORMMODEL.updateMaterialProject(materialsDto);
+                boolean isUpdated = PROJECTMATERIALFORMBO.updateMaterialProject(materialsDto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.INFORMATION, "Material Updated Successfully for that Project!").show();
                     refreshPage(); // Clear form fields
+                    loadTableData();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Update Material For this Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
             new Alert(Alert.AlertType.WARNING, "Please fill out all fields!").show();
         }
     }
-    public void refreshPage() throws SQLException {
-        lblProjectIdMaterialShow.setText(PROJECTMATERIALSFORMMODEL.getNextProjectID());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        lblProjectIdMaterialShow.setText(PROJECTMATERIALFORMBO.getNextProjectID());
         txtProjectId.setText("");
         txtMaterialId.setText("");
         txtQty.setText("");

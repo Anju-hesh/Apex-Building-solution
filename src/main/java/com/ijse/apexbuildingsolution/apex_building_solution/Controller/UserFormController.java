@@ -1,9 +1,9 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.UseraccountFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.UserAccountDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MachineTM;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.UserTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.UserFormModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
@@ -122,7 +122,7 @@ public class UserFormController {
     @FXML
     private Pane userAccountMainPane;
 
-    private final UserFormModel USERFORMMODEL = new UserFormModel();
+    private final UseraccountFormBO USERACCOUNTFORMBO = (UseraccountFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.USERACCOUNT);
 
     public void initialize() {
         try {
@@ -130,7 +130,7 @@ public class UserFormController {
             loadTableData();
             visibleData();
 
-            String nextuserID = USERFORMMODEL.getNextUserId();
+            String nextuserID = USERACCOUNTFORMBO.getNextuserId();
             txtUserId.setStyle("-fx-text-fill:#2980b9;");
             lblUserIdShow.setText(nextuserID);
 
@@ -145,8 +145,8 @@ public class UserFormController {
    //     btnUpdate.setDisable(true);
     }
 
-    private void loadTableData() throws SQLException {
-        ArrayList<UserAccountDto> userDtos = USERFORMMODEL.getAllUser();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<UserAccountDto> userDtos = USERACCOUNTFORMBO.getAllUser();
         ObservableList<UserTM> userTMS = FXCollections.observableArrayList();
 
         for (UserAccountDto userDto : userDtos) {
@@ -172,8 +172,8 @@ public class UserFormController {
 
     }
 
-    public void refreshPage() throws SQLException {
-        lblUserIdShow.setText(USERFORMMODEL.getNextUserId());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        lblUserIdShow.setText(USERACCOUNTFORMBO.getNextuserId());
         txtUserId.setText("");
         txtFullName.setText("");
         txtUserName.setText("");
@@ -207,9 +207,9 @@ public class UserFormController {
                     String password = passwordField.getText();
                     String userId = txtUserId.getText();
                     try {
-                        boolean confirm = USERFORMMODEL.confirmation(userId,password);
+                        boolean confirm = USERACCOUNTFORMBO.confirmation(userId,password);
                         if (confirm) {
-                            boolean isDeleted = USERFORMMODEL.deleteUser(selectedUser.getUserId());
+                            boolean isDeleted = USERACCOUNTFORMBO.deleteUser(selectedUser.getUserId());
                             if (isDeleted) {
                                 new Alert(Alert.AlertType.INFORMATION, "User Deleted Successfully!").show();
                                 loadTableData(); // Refresh table
@@ -220,7 +220,7 @@ public class UserFormController {
                         }else{
                             new Alert(Alert.AlertType.WARNING, "Invalid password try again....!").show();
                         }
-                    } catch (SQLException e) {
+                    } catch (SQLException | ClassNotFoundException e) {
                         new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
                     }
                 }
@@ -264,7 +264,7 @@ public class UserFormController {
         if (!userId.isEmpty()) {
             try {
                 btnReFill.setDisable(false);
-                UserAccountDto userDto = USERFORMMODEL.searchUser(userId);
+                UserAccountDto userDto = USERACCOUNTFORMBO.searchUser(userId);
                 if (userDto != null) {
                     lblUserIdShow.setText(txtUserId.getText());
                     txtFullName.setText(userDto.getFullName());
@@ -348,10 +348,10 @@ public class UserFormController {
                 String userIdUp = txtUserId.getText();
 
                 try {
-                    boolean confirm = USERFORMMODEL.confirmation(userIdUp,userpassword);
+                    boolean confirm = USERACCOUNTFORMBO.confirmation(userIdUp,userpassword);
                     if (confirm) {
                         UserAccountDto userDto = new UserAccountDto(userId, fullName, userName, password, employeeId, email);
-                        boolean isUpdated = USERFORMMODEL.updateUser(userDto);
+                        boolean isUpdated = USERACCOUNTFORMBO.updateUser(userDto);
                         if (isUpdated) {
                             new Alert(Alert.AlertType.INFORMATION, "User Update Successfully!").show();
                             loadTableData(); // Refresh table
@@ -362,7 +362,7 @@ public class UserFormController {
                     }else{
                         new Alert(Alert.AlertType.ERROR, "Invalid Password Please Try Again....!").show();
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | ClassNotFoundException e) {
                     new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
                 }
 
@@ -389,9 +389,9 @@ public class UserFormController {
     }
 
     @FXML
-    void reFillOnAction(ActionEvent event) throws SQLException {
+    void reFillOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         refreshPage();
-        lblUserIdShow.setText(USERFORMMODEL.getNextUserId());
+        lblUserIdShow.setText(USERACCOUNTFORMBO.getNextuserId());
         btnReFill.setDisable(true);
     }
 }

@@ -1,9 +1,11 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl.RepairFormBOImpl;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.RepairFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.RepairDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.EmployeeTM;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.RepairTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.RepairFormModel;
+//import com.ijse.apexbuildingsolution.apex_building_solution.model.RepairFormModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -89,7 +91,7 @@ public class RepairFormController {
     @FXML
     private JFXTextField txtRepairId;
 
-    private final RepairFormModel REPAIRFORMMODEL = new RepairFormModel();
+    private final RepairFormBO REPAIRFORMBO = (RepairFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.REPAIR);
 
     public void initialize() {
         try {
@@ -98,7 +100,7 @@ public class RepairFormController {
             visibleData();
             changeFocusText();
 
-            String nextRepairId = REPAIRFORMMODEL.getNextRepairId();
+            String nextRepairId = REPAIRFORMBO.getNextRepairId();
             txtRepairId.setStyle("-fx-text-fill:#2980b9;");
             txtRepairId.setText(nextRepairId);
 
@@ -106,8 +108,8 @@ public class RepairFormController {
             new Alert(Alert.AlertType.ERROR,"Fail to load Page!").show();
         }
     }
-    private void loadTableData() throws SQLException {
-        ArrayList<RepairDto> repairDtos = REPAIRFORMMODEL.getAllRepairs();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<RepairDto> repairDtos = REPAIRFORMBO.getAllRepairs();
         ObservableList<RepairTM> repairTMS = FXCollections.observableArrayList();
 
         for (RepairDto repairDto : repairDtos) {
@@ -138,7 +140,7 @@ public class RepairFormController {
 
         if (selectedRepair != null) {
             try {
-                boolean isDeleted = REPAIRFORMMODEL.deleteRepair(selectedRepair.getRepairId());
+                boolean isDeleted = REPAIRFORMBO.deleteRepair(selectedRepair.getRepairId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Repair Deleted Successfully!").show();
                     loadTableData();
@@ -146,7 +148,7 @@ public class RepairFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Repair!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -163,7 +165,7 @@ public class RepairFormController {
         if (!repairId.isEmpty() && !machineId.isEmpty() && !(qty < 0)) {
             try {
                 RepairDto repairDto = new RepairDto(repairId, machineId, qty);
-                boolean isSaved = REPAIRFORMMODEL.saveRepair(repairDto);
+                boolean isSaved = REPAIRFORMBO.saveRepair(repairDto);
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Repair Saved Successfully!").show();
                     updateMachine();
@@ -172,7 +174,7 @@ public class RepairFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Repair!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -187,7 +189,7 @@ public class RepairFormController {
         if (!machineId.isEmpty()) {
             btnReload.setDisable(false);
             try {
-                RepairDto repairDto = REPAIRFORMMODEL.searchRepair(machineId);
+                RepairDto repairDto = REPAIRFORMBO.searchRepair(machineId);
                 if (repairDto != null) {
                     txtRepairId.setText(repairDto.getRepairId());
                     txtQty.setText(String.valueOf(repairDto.getQty()));
@@ -223,7 +225,7 @@ public class RepairFormController {
         if (!repairId.isEmpty() && !machineId.isEmpty() && !(qty < 0)) {
             try {
                 RepairDto repairDto = new RepairDto(repairId, machineId, qty);
-                boolean isUpdate = REPAIRFORMMODEL.updateRepair(repairDto);
+                boolean isUpdate = REPAIRFORMBO.updateRepair(repairDto);
                 if (isUpdate) {
                     new Alert(Alert.AlertType.INFORMATION, "Repair Updated Successfully!").show();
                     updateMachine();
@@ -232,7 +234,7 @@ public class RepairFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Updated Repair!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -260,7 +262,7 @@ public class RepairFormController {
 
         boolean isUpdated = false;
         try {
-            isUpdated = REPAIRFORMMODEL.updateMachineQuantity(repairDto,qtyDuplicate);
+            isUpdated = REPAIRFORMBO.updateMachineQuantity(repairDto,qtyDuplicate);
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
         }
@@ -271,7 +273,7 @@ public class RepairFormController {
         }
     }
     @FXML
-    void reLoadOnAction(ActionEvent event) throws SQLException {
+    void reLoadOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
         btnReload.setDisable(true);

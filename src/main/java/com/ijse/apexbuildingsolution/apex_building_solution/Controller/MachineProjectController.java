@@ -1,13 +1,10 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.MachineProjectBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.db.DBConnection;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.CustomerDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.ProjectMaterialsDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.CustomerTM;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MachineProjectTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.ProjectMaterialTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.MachineProjectFormModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -102,7 +99,7 @@ public class MachineProjectController {
     @FXML
     private JFXTextField txtQty;
 
-    private MachineProjectFormModel MACHINEPROJECTFORMMODEL = new MachineProjectFormModel();
+    private MachineProjectBO MACHINEPROJECTBO = (MachineProjectBO) BOFactory.getInstance().getBO(BOFactory.BOType.MACHINEPROJECT);
 
     public void initialize() {
         try {
@@ -114,7 +111,7 @@ public class MachineProjectController {
 
             btnReload.setDisable(true);
 
-            String nextProjectID = MACHINEPROJECTFORMMODEL.getNextProjectID();
+            String nextProjectID = MACHINEPROJECTBO.getNextProjectID();
             lblProjectIdMachineShow.setStyle("-fx-text-fill:#2980b9;");
             lblProjectIdMachineShow.setText(nextProjectID);
 
@@ -129,8 +126,8 @@ public class MachineProjectController {
         clmQty.setCellValueFactory(new PropertyValueFactory<>("qty"));
     }
 
-    private void loadTableData() throws SQLException {
-        ArrayList<MachineProjectDto> machineProjectDtos = MACHINEPROJECTFORMMODEL.getAllMachineProjectDetails();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<MachineProjectDto> machineProjectDtos = MACHINEPROJECTBO.getAllMachineProjectDetails();
         ObservableList<MachineProjectTM> machineProjectTMS = FXCollections.observableArrayList();
 
         for (MachineProjectDto machineProjectDto : machineProjectDtos) {
@@ -150,14 +147,15 @@ public class MachineProjectController {
         String id = lblProjectIdMachineShow.getText();
         if ((selectedProject != null) || (id != null)) {
             try {
-                boolean isDeleted = MACHINEPROJECTFORMMODEL.deleteMachineProject(id);
+                boolean isDeleted = MACHINEPROJECTBO.deleteMachineProject(id);
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Machine Deleted Successfully From The Project!").show();
                     refreshPage(); // Clear form fields
+                    loadTableData();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Machine From This Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -174,14 +172,15 @@ public class MachineProjectController {
         if (!projectId.isEmpty() && !machinId.isEmpty() && qty > -1) {
             try {
                 MachineProjectDto machineProjectDto = new MachineProjectDto(projectId, machinId, qty);
-                boolean isSaved = MACHINEPROJECTFORMMODEL.saveMachineProject(machineProjectDto);
+                boolean isSaved = MACHINEPROJECTBO.saveMachineProject(machineProjectDto);
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Machine Saved Successfully for that Project!").show();
                     refreshPage(); // Clear form fields
+                    loadTableData();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Machine For this Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -198,7 +197,7 @@ public class MachineProjectController {
         if (!projectId.isEmpty()) {
             btnReload.setDisable(false);
             try {
-                ArrayList<MachineProjectDto> machinesDto = MACHINEPROJECTFORMMODEL.searchMachineProject(projectId);
+                ArrayList<MachineProjectDto> machinesDto = MACHINEPROJECTBO.searchMachineProject(projectId);
                 ObservableList<MachineProjectTM> machineProjectTMS = FXCollections.observableArrayList();
 
                 if (machinesDto != null) {
@@ -229,10 +228,10 @@ public class MachineProjectController {
     }
 
     @FXML
-    void reloadOnAction(ActionEvent event) throws SQLException {
+    void reloadOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
-        lblProjectIdMachineShow.setText(MACHINEPROJECTFORMMODEL.getNextProjectID());
+        lblProjectIdMachineShow.setText(MACHINEPROJECTBO.getNextProjectID());
         btnReload.setDisable(true);
     }
 
@@ -257,22 +256,23 @@ public class MachineProjectController {
         if (!projectId.isEmpty() && !machinId.isEmpty() && qty > -1) {
             try {
                 MachineProjectDto machineProjectDto = new MachineProjectDto(projectId, machinId, qty);
-                boolean isUpdated = MACHINEPROJECTFORMMODEL.updateMachineProject(machineProjectDto);
+                boolean isUpdated = MACHINEPROJECTBO.updateMachineProject(machineProjectDto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.INFORMATION, "Machine Updated Successfully for that Project!").show();
                     refreshPage(); // Clear form fields
+                    loadTableData();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Updated Machine For this Project!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
             new Alert(Alert.AlertType.WARNING, "Please fill out all fields!").show();
         }
     }
-    public void refreshPage() throws SQLException {
-        lblProjectIdMachineShow.setText(MACHINEPROJECTFORMMODEL.getNextProjectID());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        lblProjectIdMachineShow.setText(MACHINEPROJECTBO.getNextProjectID());
         txtProjectId.setText("");
         txtMachineId.setText("");
         txtQty.setText("");

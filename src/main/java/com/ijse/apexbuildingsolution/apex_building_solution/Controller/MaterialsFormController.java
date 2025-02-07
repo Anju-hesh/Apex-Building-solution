@@ -1,8 +1,9 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.MaterialBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MaterialsDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.MaterialsTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.MaterialsFormModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -115,7 +116,7 @@ public class MaterialsFormController {
     @FXML
     private JFXTextField txtQtyOnHand;
 
-    private final MaterialsFormModel MATERIALFORMMODEL = new MaterialsFormModel();
+    private final MaterialBO MATERIALBO = (MaterialBO) BOFactory.getInstance().getBO(BOFactory.BOType.MATERIAL);
 
     public void initialize() {
         try {
@@ -126,7 +127,7 @@ public class MaterialsFormController {
 
             btnReload.setDisable(true);
 
-            String nextMaterialID = MATERIALFORMMODEL.getNextMaterialID();
+            String nextMaterialID = MATERIALBO.getNextMaterialID();
             lblMaterialIdShow.setStyle("-fx-text-fill:#2980b9;");
             lblMaterialIdShow.setText(nextMaterialID);
 
@@ -134,8 +135,8 @@ public class MaterialsFormController {
             new Alert(Alert.AlertType.ERROR,"Fail to load Page!").show();
         }
     }
-    private void loadTableData() throws SQLException {
-        ArrayList<MaterialsDto> materialsDtos = MATERIALFORMMODEL.getAllMaterials();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<MaterialsDto> materialsDtos = MATERIALBO.getAllMaterials();
         ObservableList<MaterialsTM> materialsTMS = FXCollections.observableArrayList();
 
         for (MaterialsDto materialsDto : materialsDtos) {
@@ -160,8 +161,8 @@ public class MaterialsFormController {
         clmSupId.setCellValueFactory(new PropertyValueFactory<>("supplierId"));
     }
 
-    public void refreshPage() throws SQLException {
-        lblMaterialIdShow.setText(MATERIALFORMMODEL.getNextMaterialID());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        lblMaterialIdShow.setText(MATERIALBO.getNextMaterialID());
         txtMaterialId.setText("");
         txtMaterialName.setText("");
         txtModelNumber.setText("");
@@ -176,7 +177,7 @@ public class MaterialsFormController {
 
         if (selectedMaterial != null) {
             try {
-                boolean isDeleted = MATERIALFORMMODEL.deleteMaterials(selectedMaterial.getMaterialId());
+                boolean isDeleted = MATERIALBO.deleteMaterials(selectedMaterial.getMaterialId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Material Deleted Successfully!").show();
                     loadTableData();
@@ -184,7 +185,7 @@ public class MaterialsFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Material!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -204,7 +205,7 @@ public class MaterialsFormController {
         if (!materialId.isEmpty() && !materialName.isEmpty()&& !modelNumber.isEmpty() && amount > 0 && qtyOnHand > 0 && !supplierId.isBlank()) {
             try {
                 MaterialsDto materialsDto = new MaterialsDto(materialId, materialName, qtyOnHand, modelNumber, amount,supplierId);
-                boolean isSaved = MATERIALFORMMODEL.saveMaterials(materialsDto);
+                boolean isSaved = MATERIALBO.saveMaterials(materialsDto);
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Material Saved Successfully!").show();
                     loadTableData();
@@ -212,7 +213,7 @@ public class MaterialsFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Material!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -227,7 +228,7 @@ public class MaterialsFormController {
         if (!materialId.isEmpty()) {
             btnReload.setDisable(false);
             try {
-                MaterialsDto materialsDto = MATERIALFORMMODEL.searchMaterials(materialId);
+                MaterialsDto materialsDto = MATERIALBO.searchMaterials(materialId);
                 if (materialsDto != null) {
                     txtMaterialName.setText(materialsDto.getMaterialName());
                     txtQtyOnHand.setText(String.valueOf(materialsDto.getQtyOnHand()));
@@ -261,10 +262,10 @@ public class MaterialsFormController {
     }
 
     @FXML
-    void reloadOnAction(ActionEvent event) throws SQLException {
+    void reloadOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         loadTableData();
         refreshPage();
-        lblMaterialIdShow.setText(MATERIALFORMMODEL.getNextMaterialID());
+        lblMaterialIdShow.setText(MATERIALBO.getNextMaterialID());
         btnReload.setDisable(true);
     }
 
@@ -280,7 +281,7 @@ public class MaterialsFormController {
         if (!materialId.isEmpty() && !materialName.isEmpty()&& !modelNumber.isEmpty() && amount > 0 && qtyOnHand > 0 && !supplierId.isBlank()) {
             try {
                 MaterialsDto materialsDto = new MaterialsDto(materialId, materialName, qtyOnHand, modelNumber, amount , supplierId);
-                boolean isUpdated = MATERIALFORMMODEL.updateMaterials(materialsDto);
+                boolean isUpdated = MATERIALBO.updateMaterials(materialsDto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.INFORMATION, "Material Updated Successfully!").show();
                     loadTableData();
@@ -288,7 +289,7 @@ public class MaterialsFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Updated Material!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {

@@ -1,8 +1,9 @@
 package com.ijse.apexbuildingsolution.apex_building_solution.Controller;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.BOFactory;
+import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.SupplierFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.SupplierDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.tm.SupplierTM;
-import com.ijse.apexbuildingsolution.apex_building_solution.model.SupplierModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
@@ -103,7 +104,7 @@ public class SupplierFormController {
     @FXML
     private JFXTextField txtSupplierName;
 
-    private final SupplierModel SUPPLIERMODEL = new SupplierModel();
+    private final SupplierFormBO SUPPLIREFORMBO = (SupplierFormBO) BOFactory.getInstance().getBO(BOFactory.BOType.SUPLIRE);
 
     public void initialize() {
         try {
@@ -112,7 +113,7 @@ public class SupplierFormController {
             visibleData();
             changeFocusText();
 
-            String nextSupplierId = SUPPLIERMODEL.getNextSupplierId();
+            String nextSupplierId = SUPPLIREFORMBO.getNextSupplierId();
             txtSupplierId.setStyle("-fx-text-fill:#2980b9;");
             txtSupplierId.setText(nextSupplierId);
 
@@ -120,8 +121,8 @@ public class SupplierFormController {
             new Alert(Alert.AlertType.ERROR,"Fail to load Page!").show();
         }
     }
-    private void loadTableData() throws SQLException {
-        ArrayList<SupplierDto> supplierDtos = SUPPLIERMODEL.getAllSuppliers();
+    private void loadTableData() throws SQLException, ClassNotFoundException {
+        ArrayList<SupplierDto> supplierDtos = SUPPLIREFORMBO.getAllSuppliers();
         ObservableList<SupplierTM> supplierTMS = FXCollections.observableArrayList();
 
         for (SupplierDto supplierDto : supplierDtos) {
@@ -144,8 +145,8 @@ public class SupplierFormController {
         clmContactNumber.setCellValueFactory(new PropertyValueFactory<>("supplierPhone"));
     }
 
-    public void refreshPage() throws SQLException {
-        txtSupplierId.setText(SUPPLIERMODEL.getNextSupplierId());
+    public void refreshPage() throws SQLException, ClassNotFoundException {
+        txtSupplierId.setText(SUPPLIREFORMBO.getNextSupplierId());
         txtSupplierName.setText("");
         txtAddress.setText("");
         txtEmail.setText("");
@@ -158,7 +159,7 @@ public class SupplierFormController {
 
         if (selectedSupplier != null) {
             try {
-                boolean isDeleted = SUPPLIERMODEL.deleteSupplier(selectedSupplier.getSupplierId());
+                boolean isDeleted = SUPPLIREFORMBO.deleteSupplier(selectedSupplier.getSupplierId());
                 if (isDeleted) {
                     new Alert(Alert.AlertType.INFORMATION, "Supplier Deleted Successfully!").show();
                     loadTableData();
@@ -166,7 +167,7 @@ public class SupplierFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Delete Supplier!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -185,7 +186,7 @@ public class SupplierFormController {
         if (!supplierId.isEmpty() && !supplierName.isEmpty() && !supplierAddress.isEmpty() && !email.isEmpty() && !contactNumber.isEmpty()) {
             try {
                 SupplierDto supplierDto = new SupplierDto(supplierId, supplierName, supplierAddress, email, contactNumber);
-                boolean isSaved = SUPPLIERMODEL.saveSupplier(supplierDto);
+                boolean isSaved = SUPPLIREFORMBO.saveSupplier(supplierDto);
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Supplier Saved Successfully!").show();
                     loadTableData();
@@ -193,7 +194,7 @@ public class SupplierFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Supplier!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
@@ -207,7 +208,7 @@ public class SupplierFormController {
 
         if (!supplierId.isEmpty()) {
             try {
-                SupplierDto supplierDto = SUPPLIERMODEL.searchSupplier(supplierId);
+                SupplierDto supplierDto = SUPPLIREFORMBO.searchSupplier(supplierId);
                 if (supplierDto != null) {
                     txtSupplierName.setText(supplierDto.getSupplierName());
                     txtAddress.setText(supplierDto.getSupplierAddress());
@@ -235,7 +236,7 @@ public class SupplierFormController {
         if (!supplierId.isEmpty() && !supplierName.isEmpty() && !supplierAddress.isEmpty() && !email.isEmpty() && !contactNumber.isEmpty()) {
             try {
                 SupplierDto supplierDto = new SupplierDto(supplierId, supplierName, supplierAddress, email, contactNumber);
-                boolean isUpdated = SUPPLIERMODEL.updateSupplier(supplierDto);
+                boolean isUpdated = SUPPLIREFORMBO.updateSupplier(supplierDto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.INFORMATION, "Supplier Updated Successfully!").show();
                     loadTableData();
@@ -243,7 +244,7 @@ public class SupplierFormController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Updated Supplier!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
             }
         } else {
