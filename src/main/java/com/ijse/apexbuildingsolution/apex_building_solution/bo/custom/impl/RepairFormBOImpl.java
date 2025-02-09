@@ -4,7 +4,6 @@ import com.ijse.apexbuildingsolution.apex_building_solution.dao.CrudUtil;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.DAOFactory;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.RepairDAO;
 import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.RepairFormBO;
-import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.RepairDAOImpl;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.RepairDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Repair;
 
@@ -19,7 +18,6 @@ public class RepairFormBOImpl implements RepairFormBO {
         return repairDAO.getNextId();
     }
     public ArrayList<RepairDto> getAllRepairs() throws SQLException, ClassNotFoundException {
-//        return repairDAO.getAll();
         ArrayList<RepairDto> repairDtos = new ArrayList<>();
         ArrayList<Repair> repairs = repairDAO.getAll();
 
@@ -34,7 +32,6 @@ public class RepairFormBOImpl implements RepairFormBO {
     }
 
     public boolean saveRepair(RepairDto repairDto) throws SQLException, ClassNotFoundException {
-//        return repairDAO.save(repairDto);
         Repair repair = new Repair(
                 repairDto.getRepairId(),
                 repairDto.getMachineId(),
@@ -48,7 +45,6 @@ public class RepairFormBOImpl implements RepairFormBO {
     }
 
     public boolean updateRepair(RepairDto repairDto) throws SQLException, ClassNotFoundException {
-//        return repairDAO.update(repairDto);
 
         Repair repair = new Repair(
                 repairDto.getRepairId(),
@@ -59,7 +55,6 @@ public class RepairFormBOImpl implements RepairFormBO {
     }
 
     public RepairDto searchRepair(String machineId) throws SQLException, ClassNotFoundException {
-//        return repairDAO.search(machineId);
 
         Repair repair = repairDAO.search(machineId);
         if (repair != null) {

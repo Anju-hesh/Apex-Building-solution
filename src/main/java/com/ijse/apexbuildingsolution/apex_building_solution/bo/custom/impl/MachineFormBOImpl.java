@@ -3,10 +3,7 @@ package com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl;
 import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.MachineFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.DAOFactory;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.MachineDAO;
-import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.MachineDAOImpl;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.CustomerDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.entity.Customer;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Machine;
 
 import java.sql.SQLException;

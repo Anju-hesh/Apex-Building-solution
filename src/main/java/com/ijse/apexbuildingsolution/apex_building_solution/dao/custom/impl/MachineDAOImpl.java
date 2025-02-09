@@ -6,6 +6,8 @@ import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWanted
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Machine;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.MachineProject;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.custom.AddProjectWantedCustom;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -101,8 +103,8 @@ public class MachineDAOImpl implements MachineDAO {
         }
         return machineIds;
     }
-    public boolean updateMachineQuantities(AddProjectWantedDto addProjectWantedDto) throws SQLException {
-        for (MachineProjectDto dto : addProjectWantedDto.getMachineProjectDtos()) {
+    public boolean updateMachineQuantities(AddProjectWantedCustom addProjectWantedDto) throws SQLException {
+        for (MachineProject dto : addProjectWantedDto.getMachineProjectDtos()) {
             boolean isUpdated = CrudUtil.execute(
                     "UPDATE machine SET QtyOnHand = QtyOnHand - ? WHERE MachineID = ?",
                     dto.getQty(),

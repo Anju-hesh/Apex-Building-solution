@@ -5,6 +5,7 @@ import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.ProjectMa
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWantedDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.ProjectMaterialsDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.ProjectMaterials;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.custom.AddProjectWantedCustom;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,8 +82,8 @@ public class ProjectMaterialDAOImpl implements ProjectMaterialDAO {
         }
         return projectMaterialsDtos;
     }
-    public boolean saveProjectMaterials(AddProjectWantedDto addProjectWantedDto) throws SQLException {
-        for (ProjectMaterialsDto dto : addProjectWantedDto.getProjectMaterialsDtos()) {
+    public boolean saveProjectMaterials(AddProjectWantedCustom addProjectWantedDto) throws SQLException {
+        for (ProjectMaterials dto : addProjectWantedDto.getProjectMaterialsDtos()) {
             boolean isSaved = CrudUtil.execute(
                     "INSERT INTO projectmaterialdetails VALUES (?,?,?)",
                     addProjectWantedDto.getProjectId(),

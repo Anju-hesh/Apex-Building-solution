@@ -3,7 +3,6 @@ package com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl;
 import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.CustomerFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.DAOFactory;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.CustomerDAO;
-import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.CustomerDAOImpl;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.CustomerDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Customer;
 
@@ -38,15 +37,5 @@ public class CustomerFormBOImpl implements CustomerFormBO {
     public CustomerDto searchCustomer(String customerId) throws SQLException, ClassNotFoundException {
         Customer customer = customerDAO.search(customerId);
         return new CustomerDto(customer.getCustomerId(),customer.getCustomerName(),customer.getCustomerAddress(),customer.getCustomerPhone());
-
     }
-//    public ArrayList<String> getCustomerIds() throws SQLException {
-//        ResultSet resultSet = CrudUtil.execute("SELECT CustomerId FROM Customer");
-//        ArrayList<String> customerIds = new ArrayList<>();
-//
-//        while (resultSet.next()){
-//            customerIds.add(resultSet.getString(1));
-//        }
-//        return customerIds;
-//    }
 }

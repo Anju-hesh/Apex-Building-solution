@@ -5,6 +5,7 @@ import com.ijse.apexbuildingsolution.apex_building_solution.dao.CrudUtil;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWantedDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.MachineProject;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.custom.AddProjectWantedCustom;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,5 +17,5 @@ public interface MachineProjectDAO extends CrudDAO<MachineProject> {
 //    boolean updateMachineProject(MachineProjectDto machineProjectDto) throws SQLException;
      ArrayList<MachineProject> searchMachineProject(String projectId) throws SQLException;
 //    ArrayList<MachineProjectDto> getAllMachineProjectDetails() throws SQLException;
-     boolean saveProjectMachines(AddProjectWantedDto addProjectWantedDto) throws SQLException;
+     boolean saveProjectMachines(AddProjectWantedCustom addProjectWantedDto) throws SQLException;
 }

@@ -3,10 +3,7 @@ package com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl;
 import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.MachineProjectBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.DAOFactory;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.MachineProjectDAO;
-import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.MachineProjectDAOImpl;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.entity.Machine;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.MachineProject;
 
 import java.sql.SQLException;
@@ -32,7 +29,6 @@ public class MachineProjectBOImpl implements MachineProjectBO {
     }
 
     public ArrayList<MachineProjectDto> searchMachineProject(String projectId) throws SQLException, ClassNotFoundException {
-//        return machineProjectDAO.searchMachineProject(projectId);
         ArrayList<MachineProjectDto> machineProjectDtos = new ArrayList<>();
 
         MachineProject machineProject = machineProjectDAO.search(projectId);

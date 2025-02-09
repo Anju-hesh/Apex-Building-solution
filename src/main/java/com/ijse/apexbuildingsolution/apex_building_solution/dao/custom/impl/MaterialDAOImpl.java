@@ -6,6 +6,8 @@ import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWanted
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MaterialsDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.ProjectMaterialsDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Materials;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.ProjectMaterials;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.custom.AddProjectWantedCustom;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -106,8 +108,8 @@ public class MaterialDAOImpl implements MaterialDAO {
         }
         return materialIds;
     }
-    public boolean updateMaterialQuantities(AddProjectWantedDto addProjectWantedDto) throws SQLException {
-        for (ProjectMaterialsDto dto : addProjectWantedDto.getProjectMaterialsDtos()) {
+    public boolean updateMaterialQuantities(AddProjectWantedCustom addProjectWantedDto) throws SQLException {
+        for (ProjectMaterials dto : addProjectWantedDto.getProjectMaterialsDtos()) {
             boolean isUpdated = CrudUtil.execute(
                     "UPDATE material SET Qty_On_Hand = Qty_On_Hand - ? WHERE MaterialID = ?",
                     dto.getQty(),

@@ -3,10 +3,7 @@ package com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl;
 import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.EmployeeFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.DAOFactory;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.EmployeeDAO;
-import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.EmployeeDAOImpl;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.CustomerDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.EmployeeDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.entity.Customer;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Employee;
 
 import java.sql.SQLException;

@@ -5,6 +5,7 @@ import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.PaymentDA
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWantedDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.PaymentDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Payment;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.custom.AddProjectWantedCustom;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -79,8 +80,8 @@ public class PaymentDAOImpl implements PaymentDAO {
         }
         return null;
     }
-    public boolean savePayments(AddProjectWantedDto addProjectWantedDto) throws SQLException {
-        for (PaymentDto dto : addProjectWantedDto.getPaymentDtos()) {
+    public boolean savePayments(AddProjectWantedCustom addProjectWantedDto) throws SQLException {
+        for (Payment dto : addProjectWantedDto.getPaymentDtos()) {
             boolean isSaved = CrudUtil.execute(
                     "INSERT INTO payment VALUES (?,?,?,?,?,?)",
                     dto.getPaymentId(),

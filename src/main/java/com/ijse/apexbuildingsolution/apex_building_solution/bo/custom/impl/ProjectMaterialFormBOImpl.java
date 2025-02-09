@@ -3,10 +3,7 @@ package com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl;
 import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.ProjectMaterialFormBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.DAOFactory;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.ProjectMaterialDAO;
-import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.ProjectMaterialDAOImpl;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.PaymentDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.ProjectMaterialsDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.entity.Payment;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.ProjectMaterials;
 
 import java.sql.SQLException;
@@ -20,7 +17,6 @@ public class ProjectMaterialFormBOImpl implements ProjectMaterialFormBO {
         return projectMaterialDAO.getNextId();
     }
     public boolean saveMaterialProject(ProjectMaterialsDto materialProjectDto) throws SQLException, ClassNotFoundException {
-//        return projectMaterialDAO.save(materialProjectDto);
         ArrayList<ProjectMaterialsDto> projectMaterialsDtos = new ArrayList<>();
         ArrayList<ProjectMaterials> projectMaterials = projectMaterialDAO.getAll();
         for (ProjectMaterials projectMaterial : projectMaterials) {
@@ -38,7 +34,6 @@ public class ProjectMaterialFormBOImpl implements ProjectMaterialFormBO {
     }
 
     public ArrayList<ProjectMaterialsDto> searchMaterialProject(String projectId) throws SQLException {
-//        return projectMaterialDAO.searchMaterialProject(projectId);
 
         ArrayList<ProjectMaterialsDto> projectMaterialsDtos = new ArrayList<>();
         ArrayList<ProjectMaterials> projectMaterials = projectMaterialDAO.searchMaterialProject(projectId);
@@ -54,7 +49,6 @@ public class ProjectMaterialFormBOImpl implements ProjectMaterialFormBO {
 
     }
     public ArrayList<ProjectMaterialsDto> getAllProjectMaterialDetails() throws SQLException, ClassNotFoundException {
-//        return projectMaterialDAO.getAll();
 
         ArrayList<ProjectMaterialsDto> projectMaterialsDtos = new ArrayList<>();
         ArrayList<ProjectMaterials> projectMaterials = projectMaterialDAO.getAll();

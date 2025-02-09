@@ -1,5 +1,8 @@
-package com.ijse.apexbuildingsolution.apex_building_solution.entity;
+package com.ijse.apexbuildingsolution.apex_building_solution.entity.custom;
 
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.MachineProject;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.Payment;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.ProjectMaterials;
 import lombok.*;
 
 import java.sql.Date;
@@ -11,7 +14,7 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @ToString
 
-public class AddProjectWanted {
+public class AddProjectWantedCustom {
     private String projectId;
     private String projectName;
     private String projectDescription;

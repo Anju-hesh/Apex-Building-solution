@@ -4,6 +4,7 @@ import com.ijse.apexbuildingsolution.apex_building_solution.dao.CrudDAO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.AddProjectWantedDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.ProjectMaterialsDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.ProjectMaterials;
+import com.ijse.apexbuildingsolution.apex_building_solution.entity.custom.AddProjectWantedCustom;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,6 @@ public interface ProjectMaterialDAO extends CrudDAO<ProjectMaterials> {
 //     boolean updateMaterialProject(ProjectMaterialsDto materialProjectDto) throws SQLException ;
      ArrayList<ProjectMaterials> searchMaterialProject(String projectId) throws SQLException ;
 //     ArrayList<ProjectMaterialsDto> getAllProjectMaterialDetails() throws SQLException ;
-      boolean saveProjectMaterials(AddProjectWantedDto addProjectWantedDto) throws SQLException ;
+      boolean saveProjectMaterials(AddProjectWantedCustom addProjectWantedDto) throws SQLException ;
 
 }

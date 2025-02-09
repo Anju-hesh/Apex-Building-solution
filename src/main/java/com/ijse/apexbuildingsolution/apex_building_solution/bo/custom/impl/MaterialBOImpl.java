@@ -3,10 +3,7 @@ package com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.impl;
 import com.ijse.apexbuildingsolution.apex_building_solution.bo.custom.MaterialBO;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.DAOFactory;
 import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.MaterialDAO;
-import com.ijse.apexbuildingsolution.apex_building_solution.dao.custom.impl.MaterialDAOImpl;
-import com.ijse.apexbuildingsolution.apex_building_solution.dto.MachineProjectDto;
 import com.ijse.apexbuildingsolution.apex_building_solution.dto.MaterialsDto;
-import com.ijse.apexbuildingsolution.apex_building_solution.entity.MachineProject;
 import com.ijse.apexbuildingsolution.apex_building_solution.entity.Materials;
 
 import java.sql.SQLException;
@@ -20,7 +17,6 @@ public class MaterialBOImpl implements MaterialBO {
         return materialDAO.getNextId();
     }
     public ArrayList<MaterialsDto> getAllMaterials() throws SQLException, ClassNotFoundException {
-//       return materialDAO.getAll();
         ArrayList<MaterialsDto> materialsDtos = new ArrayList<>();
         ArrayList<Materials> materials =materialDAO.getAll();
         for (Materials material : materials) {
@@ -42,7 +38,6 @@ public class MaterialBOImpl implements MaterialBO {
     }
 
     public MaterialsDto searchMaterials(String materialId) throws SQLException, ClassNotFoundException {
-//        return materialDAO.search(materialId)
         ArrayList<MaterialsDto> matdtosmatdtos = new ArrayList<>();
 
         Materials mat = materialDAO.search(materialId);
@@ -52,7 +47,6 @@ public class MaterialBOImpl implements MaterialBO {
 
     }
     public MaterialsDto findById(String selectedMaterialId) throws SQLException {
-//        return materialDAO.findById(selectedMaterialId);
         ArrayList<MaterialsDto> materialsDtos = new ArrayList<>();
         Materials mat = materialDAO.findById(selectedMaterialId);
         MaterialsDto materialsDto = new MaterialsDto(mat.getMaterialId() , mat.getMaterialName(),mat.getQtyOnHand(),mat.getModelNumber(),mat.getAmount(),mat.getSuplierId());
